@@ -85,7 +85,7 @@ export default function Home() {
         typeUrl: "/circle.cctp.v1.MsgDepositForBurn",
         value: {
           from: walletAddress,
-          amount: "1",
+          amount: data.amount,
           destinationDomain: 0,
           mintRecipient: mintRecipientBytes,
           burnToken: "uusdc",
@@ -154,7 +154,7 @@ export default function Home() {
             <Input
               name="amount"
               type="text"
-              placeholder="Mint amount"
+              placeholder="Mint amount "
               className="w-full border rounded-md px-3 py-2 text-sm"
               required
             />
