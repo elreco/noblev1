@@ -40,6 +40,7 @@ export default function Home() {
   const [client, setClient] = useState<SigningStargateClient | null>(null);
   const [usdcBalance, setUsdcBalance] = useState<string>("0");
   const [txResult, setTxResult] = useState<string>("");
+  const [recipientAddress, setRecipientAddress] = useState<string>("");
 
   const handleConnectWallet = async () => {
     try {
@@ -72,6 +73,7 @@ export default function Home() {
 
     try {
       setTxState({ loading: true, error: "", success: false });
+      setRecipientAddress(data.recipient);
 
       const amountInUSDC = parseFloat(data.amount);
       if (isNaN(amountInUSDC)) {
@@ -197,13 +199,13 @@ export default function Home() {
               <AlertDescription>Transaction successful!</AlertDescription>
               <div className="flex space-x-2">
                 <Button
-                  onClick={() => window.open(`https://sepolia.etherscan.io/tx/${txResult}`, '_blank')}
+                  onClick={() => window.open(`https://sepolia.etherscan.io/address/${recipientAddress}`, '_blank')}
                   className="mt-2 bg-blue-500 hover:bg-blue-600 text-white"
                 >
                   View on Sepolia Etherscan
                 </Button>
                 <Button
-                  onClick={() => window.open(`https://testnet.mintscan.io/noble-testnet/tx/${txResult}`, '_blank')}
+                  onClick={() => window.open(`https://mintscan.io/noble-testnet/tx/${txResult}`, '_blank')}
                   className="mt-2 bg-green-500 hover:bg-green-600 text-white"
                 >
                   View on Noble Testnet Mintscan
