@@ -73,6 +73,12 @@ export default function Home() {
     try {
       setTxState({ loading: true, error: "", success: false });
 
+      const amountInUSDC = parseFloat(data.amount);
+      if (isNaN(amountInUSDC)) {
+        throw new Error("Invalid amount");
+      }
+      const amountInMicroUSDC = (amountInUSDC * 1_000_000).toString();
+
       const walletAddress = nobleWallet.address;
       const rawMintRecipient = data.recipient;
       const cleanedMintRecipient = rawMintRecipient.replace(/^0x/, '');
@@ -85,7 +91,7 @@ export default function Home() {
         typeUrl: "/circle.cctp.v1.MsgDepositForBurn",
         value: {
           from: walletAddress,
-          amount: data.amount,
+          amount: amountInMicroUSDC,
           destinationDomain: 0,
           mintRecipient: mintRecipientBytes,
           burnToken: "uusdc",
@@ -99,7 +105,11 @@ export default function Home() {
 
       const result = await client.signAndBroadcast(walletAddress, [msg], fee, "");
 
-      setTxResult(`Transaction Hash: ${result.transactionHash}`);
+      setTxResult(result.transactionHash);
+
+      const newBalance = await getUSDCBalance(walletAddress, client);
+      setUsdcBalance(newBalance);
+
       setTxState({ loading: false, error: "", success: true });
     } catch {
       setTxState((prev) => ({ ...prev, loading: false, error: "Transaction failed" }));
@@ -153,8 +163,10 @@ export default function Home() {
           >
             <Input
               name="amount"
-              type="text"
-              placeholder="Mint amount "
+              type="number"
+              step="0.000001"
+              min="0"
+              placeholder="Amount in USDC"
               className="w-full border rounded-md px-3 py-2 text-sm"
               required
             />
@@ -191,7 +203,7 @@ export default function Home() {
                   View on Sepolia Etherscan
                 </Button>
                 <Button
-                  onClick={() => window.open(`https://testnet.mintscan.io/noble-testnet/txs/${txResult}`, '_blank')}
+                  onClick={() => window.open(`https://testnet.mintscan.io/noble-testnet/tx/${txResult}`, '_blank')}
                   className="mt-2 bg-green-500 hover:bg-green-600 text-white"
                 >
                   View on Noble Testnet Mintscan
