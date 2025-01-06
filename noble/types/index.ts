@@ -1,9 +1,3 @@
-export interface WalletState {
-  address: string;
-  balance: string;
-  isConnected: boolean;
-}
-
 export interface BridgeFormData {
   amount: string;
   recipient: string;
